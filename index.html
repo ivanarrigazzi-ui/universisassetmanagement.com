@@ -278,7 +278,7 @@ const typer = (() => {
   if (qs || saved) return;
   const ctl = new AbortController(); setTimeout(() => ctl.abort(), 2000);
   fetch('https://api.country.is/', {signal: ctl.signal}).then(r => r.json())
-    .then(d => { const l = byCountry(String(d.country || '').toUpperCase()); if (l !== lang) applyLang(l, true);   // manda el país del visitante (IP) })
+    .then(d => { const l = byCountry(String(d.country || '').toUpperCase()); if (l !== lang) applyLang(l, true); })
     .catch(() => {});
 })();
 
