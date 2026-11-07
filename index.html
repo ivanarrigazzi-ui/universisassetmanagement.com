@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Universis Asset Management</title>
+<link rel="icon" href="img/u.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;color:#fff;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  @keyframes in{to{opacity:1}}
+  /* fondo que va pasando: real estate, agro, minería/oro, suelo… en blanco y negro bajo un velo negro */
+  .bg{position:fixed;inset:0;overflow:hidden;background:#000}
+  .bg i{position:absolute;inset:-2%;background:center/cover no-repeat;opacity:0;transition:opacity 2.4s ease;will-change:opacity,transform}
+  .bg i.on{opacity:1}
+  .bg i.on,.bg i.off{animation:kb 10s linear forwards}
+  .bg i:nth-child(even).on,.bg i:nth-child(even).off{animation-name:kb2}
+  @keyframes kb{from{transform:scale(1) translate3d(0,0,0)}to{transform:scale(1.05) translate3d(-1%,-.5%,0)}}
+  @keyframes kb2{from{transform:scale(1.05) translate3d(-1%,.5%,0)}to{transform:scale(1) translate3d(0,0,0)}}
+  .shade{position:fixed;inset:0;background:
+     linear-gradient(90deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.72) 24%,rgba(0,0,0,.38) 46%,rgba(0,0,0,.1) 64%,rgba(0,0,0,0) 78%),
+     linear-gradient(0deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.25) 16%,rgba(0,0,0,0) 30%),
+     radial-gradient(ellipse 30% 22% at 100% 0%,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 100%)}
+
+  /* cabecera */
+  .top{position:fixed;z-index:3;left:0;right:0;top:0;display:flex;align-items:flex-start;justify-content:space-between;padding:30px 7vw;opacity:0;animation:in 1.6s ease 1s forwards}
+  .brand{display:block;text-decoration:none}
+  .brand img{display:block;width:56px;height:auto}
+
+  .private{display:inline-block;padding:8px 14px;border:1px solid rgba(255,255,255,.35);border-radius:0;color:#fff;text-decoration:none;
+           font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:400;background:rgba(0,0,0,.28);text-shadow:0 1px 6px rgba(0,0,0,.4);
+           transition:background .3s,color .3s;animation:latido 3.4s ease-in-out infinite}
+  .private:hover{background:#fff;color:#000;animation:none;border-color:#fff}
+  @keyframes latido{
+    0%,100%{border-color:rgba(255,255,255,.28);box-shadow:0 0 0 0 rgba(255,255,255,0)}
+    50%{border-color:rgba(255,255,255,.85);box-shadow:0 0 14px 1px rgba(255,255,255,.22)}}
+
+  /* máquina de escribir */
+  .wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 7vw}
+  .type{font-weight:200;font-size:clamp(40px,5.4vw,84px);letter-spacing:-.015em;line-height:1;min-height:1.2em;white-space:nowrap;opacity:0;animation:in 1s ease 2.2s forwards}
+  .caret{display:inline-block;width:2px;height:.82em;margin-left:6px;background:#fff;vertical-align:-.06em;animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+
+  footer{position:fixed;z-index:2;left:7vw;right:7vw;bottom:28px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:18px 30px;
+         padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:11px;opacity:0;animation:in 2s ease 3s forwards;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+  footer .of{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center;gap:0 18px}
+  footer .of i{width:1px;height:12px;background:rgba(255,255,255,.22)}
+  footer .mail{justify-self:start;display:inline-block;padding:9px 16px;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.25);font-size:10.5px;text-shadow:none}
+  footer .mail:hover{background:#fff;color:#000;opacity:1}
+  footer .cr{justify-self:end;color:rgba(255,255,255,.6);font-weight:300;font-size:10.5px;letter-spacing:.06em}
+  footer .of span{color:rgba(255,255,255,.5);font-weight:300;white-space:nowrap}
+  footer .of b{color:#fff;font-weight:500;letter-spacing:.22em;text-transform:uppercase;font-size:10px;margin-right:10px}
+  footer a{color:#fff;text-decoration:none;font-weight:300;letter-spacing:.04em;transition:opacity .2s}
+  footer a:hover{opacity:.7}
+
+  @media (max-width:1100px) and (min-width:701px){footer .of{flex-wrap:wrap;justify-content:flex-start;gap:6px 18px}}
+  @media (max-width:700px){
+    .bg i{background-position:var(--pm,center)}
+    .shade{background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.85) 100%)}
+    .top{padding:20px 20px}
+    .brand img{width:46px}
+    .private{padding:7px 11px;font-size:8.5px;letter-spacing:.18em}
+    .wrap{padding:0 24px 120px}
+    footer{left:24px;right:24px;bottom:20px;grid-template-columns:1fr;gap:12px;padding-top:14px;font-size:10px}
+    footer .cr{justify-self:start;font-size:9.5px}
+    .wrap{padding-bottom:180px}
+    footer .of{flex-direction:column;align-items:flex-start;gap:6px}
+    footer .of i{display:none}
+    footer .of span{white-space:normal}
+  }
+  @media (prefers-reduced-motion:reduce){.bg i{animation:none!important}}
+  .still *{animation-delay:0s!important;animation-duration:0s!important}
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<div class="shade" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Universis Asset Management">
+    <img src="img/logo-blanco.png" alt="Universis Asset Management">
+  </a>
+  <a class="private" href="https://hub.universiscapitalpartner.com/">Private area</a>
+</header>
+
+<main class="wrap">
+  <div class="type" aria-label="Investment. Development. Execution. Value."><span id="tw"></span><span class="caret"></span></div>
+</main>
+
+<footer>
+  <div class="of">
+    <span><b>Madrid</b>Paseo de la Castellana 40, 28046 Madrid, Spain</span><i></i>
+    <span><b>Luxembourg</b>21 rue du Puits Romain, L-8070 Bertrange</span><i></i>
+    <span><b>USA</b>8 The Green, Ste B, Dover, DE 19901</span>
+  </div>
+  <a class="mail" href="mailto:info@universisassetmanagement.com">info@universisassetmanagement.com</a>
+  <span class="cr">© 2026 Universis Asset Management</span>
+</footer>
+
+<script>
+const STILL = location.search.includes('still');
+if (STILL) document.documentElement.classList.add('still');
+
+/* ---------- fondo ---------- */
+(() => {
+  const F = ['02-edificio','03-villas','04-solar','09-eolico','05-olivar','07-oro','08-ciudad'];
+  const DIR = Math.max(screen.width, screen.height) * (window.devicePixelRatio || 1) > 3000 ? 'fondo-4k' : 'fondo-hd';   // pantallas retina/4K: fotos de 3840 px
+  const bg = document.getElementById('bg');
+  const P = {'02-edificio':'62% 50%','03-villas':'60% 50%','07-oro':'74% 50%','08-ciudad':'58% 50%'};   // en móvil, que se vea el motivo
+  const els = F.map(n => { const i = document.createElement('i'); i.style.backgroundImage = `url(img/${DIR}/${n}.jpg)`; if (P[n]) i.style.setProperty('--pm', P[n]); bg.appendChild(i); return i; });
+  let k = 0;
+  const show = n => {
+    const prev = els[k]; k = n;
+    if (prev !== els[k]){ prev.classList.remove('on'); prev.classList.add('off'); setTimeout(() => prev.classList.remove('off'), 2600); }
+    els[k].classList.remove('off'); void els[k].offsetWidth; els[k].classList.add('on');
+  };
+  if (STILL){ els[+(new URLSearchParams(location.search).get('n') || 0)].classList.add('on'); return; }
+  F.slice(1).forEach(n => { const im = new Image(); im.src = `img/${DIR}/${n}.jpg`; });   // precarga
+  setTimeout(() => show(0), 150);
+  setInterval(() => show((k + 1) % els.length), 7000);
+})();
+
+/* ---------- máquina de escribir ---------- */
+(() => {
+  const words = ['Investment.', 'Development.', 'Execution.', 'Value.'];
+  const el = document.getElementById('tw');
+  if (STILL){ el.textContent = 'Development.'; return; }
+  let w = 0, i = 0, del = false;
+  function step(){
+    const word = words[w];
+    if (!del){
+      i++; el.textContent = word.slice(0, i);
+      if (i === word.length){ del = true; return setTimeout(step, w === words.length-1 ? 2600 : 1700); }
+      return setTimeout(step, 70 + Math.random()*70);
+    }
+    i--; el.textContent = word.slice(0, i);
+    if (i === 0){ del = false; w = (w+1) % words.length; return setTimeout(step, 380); }
+    setTimeout(step, 34);
+  }
+  setTimeout(step, 2600);
+})();
+
+</script>
+</body>
+</html>
