@@ -7,12 +7,12 @@
 <link rel="icon" href="img/u.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:#000;color:#fff;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
   @keyframes in{to{opacity:1}}
-  /* fondo que va pasando: real estate, agro, minería/oro, suelo… en blanco y negro bajo un velo negro */
+  /* fondo que va pasando */
   .bg{position:fixed;inset:0;overflow:hidden;background:#000}
   .bg i{position:absolute;inset:-2%;background:center/cover no-repeat;opacity:0;transition:opacity 2.4s ease;will-change:opacity,transform}
   .bg i.on{opacity:1}
@@ -29,8 +29,9 @@
   .top{position:fixed;z-index:3;left:0;right:0;top:0;display:flex;align-items:flex-start;justify-content:space-between;padding:30px 7vw;opacity:0;animation:in 1.6s ease 1s forwards}
   .brand{display:block;text-decoration:none}
   .brand img{display:block;width:56px;height:auto}
+  .actions{display:flex;align-items:center;gap:12px}
 
-  .private{display:inline-block;padding:8px 14px;border:1px solid rgba(255,255,255,.35);border-radius:0;color:#fff;text-decoration:none;
+  .private{display:inline-block;padding:8px 14px;border:1px solid rgba(255,255,255,.35);border-radius:0;color:#fff;text-decoration:none;cursor:pointer;font-family:inherit;
            font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:400;background:rgba(0,0,0,.28);text-shadow:0 1px 6px rgba(0,0,0,.4);
            transition:background .3s,color .3s;animation:latido 3.4s ease-in-out infinite}
   .private:hover{background:#fff;color:#000;animation:none;border-color:#fff}
@@ -38,12 +39,28 @@
     0%,100%{border-color:rgba(255,255,255,.28);box-shadow:0 0 0 0 rgba(255,255,255,0)}
     50%{border-color:rgba(255,255,255,.85);box-shadow:0 0 14px 1px rgba(255,255,255,.22)}}
 
+  /* idioma */
+  .lang{position:relative}
+  .lang > button{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid transparent;background:none;color:#fff;cursor:pointer;font-family:inherit;
+                 font-size:9.5px;letter-spacing:.24em;font-weight:400;text-shadow:0 1px 6px rgba(0,0,0,.4);opacity:.85;transition:opacity .2s,border-color .2s}
+  .lang > button:hover,.lang.open > button{opacity:1;border-color:rgba(255,255,255,.25)}
+  .lang > button svg{width:8px;height:8px;transition:transform .2s}
+  .lang.open > button svg{transform:rotate(180deg)}
+  .lang ul{position:absolute;right:0;top:calc(100% + 6px);min-width:150px;list-style:none;background:rgba(8,10,11,.94);border:1px solid rgba(255,255,255,.16);
+           backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:6px 0;opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .2s,transform .2s,visibility .2s}
+  .lang.open ul{opacity:1;visibility:visible;transform:none}
+  .lang li button{display:flex;width:100%;justify-content:space-between;gap:18px;padding:9px 16px;background:none;border:0;color:rgba(255,255,255,.7);cursor:pointer;
+                  font-family:inherit;font-size:11px;font-weight:300;letter-spacing:.04em;text-align:left}
+  .lang li button span{font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.4)}
+  .lang li button:hover{background:rgba(255,255,255,.07);color:#fff}
+  .lang li button[aria-current="true"]{color:#fff}
+  .lang li button[aria-current="true"] span{color:#fff}
+
   /* máquina de escribir */
   .wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 7vw}
   .type{font-weight:200;font-size:clamp(40px,5.4vw,84px);letter-spacing:-.015em;line-height:1;min-height:1.2em;white-space:nowrap;opacity:0;animation:in 1s ease 2.2s forwards}
   .caret{display:inline-block;width:2px;height:.82em;margin-left:6px;background:#fff;vertical-align:-.06em;animation:blink 1.05s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
-
 
   footer{position:fixed;z-index:2;left:7vw;right:7vw;bottom:28px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:18px 30px;
          padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:11px;opacity:0;animation:in 2s ease 3s forwards;text-shadow:0 1px 10px rgba(0,0,0,.55)}
@@ -57,20 +74,53 @@
   footer a{color:#fff;text-decoration:none;font-weight:300;letter-spacing:.04em;transition:opacity .2s}
   footer a:hover{opacity:.7}
 
+  /* ventana de acceso */
+  .modal{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55);
+         backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+  .modal.open{opacity:1;visibility:visible}
+  .box{position:relative;width:100%;max-width:380px;padding:42px 38px 34px;background:rgba(8,10,11,.92);border:1px solid rgba(255,255,255,.16);
+       box-shadow:0 30px 80px rgba(0,0,0,.6);transform:translateY(10px);transition:transform .35s ease}
+  .modal.open .box{transform:none}
+  .box .x{position:absolute;top:14px;right:14px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:none;border:0;cursor:pointer;opacity:.55;transition:opacity .2s}
+  .box .x:hover{opacity:1}
+  .box .x svg{width:12px;height:12px}
+  .box .u{display:block;width:26px;height:auto;margin-bottom:22px;opacity:.9}
+  .box h2{font-weight:400;font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+  .box p.sub{margin-top:8px;font-size:12px;font-weight:300;color:rgba(255,255,255,.5);line-height:1.5}
+  .box label{display:block;margin-top:26px;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .box input{display:block;width:100%;margin-top:8px;padding:10px 0;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.25);border-radius:0;color:#fff;
+             font-family:inherit;font-size:16px;font-weight:300;outline:none;transition:border-color .2s}
+  .box input:focus{border-bottom-color:#fff}
+  .box input:-webkit-autofill{-webkit-text-fill-color:#fff;-webkit-box-shadow:0 0 0 40px #0b0d0e inset;caret-color:#fff}
+  .box .err{min-height:18px;margin-top:16px;font-size:11.5px;font-weight:300;color:#ff8a80;opacity:0;transition:opacity .25s}
+  .box .err.show{opacity:1}
+  .box .go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:10px;padding:14px;background:#fff;color:#000;border:1px solid #fff;border-radius:0;cursor:pointer;
+           font-family:inherit;font-size:10px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;transition:background .25s,color .25s}
+  .box .go:hover{background:transparent;color:#fff}
+  .box .go[disabled]{opacity:.6;cursor:default}
+  .box .go i{display:none;width:11px;height:11px;border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+  .box .go[disabled] i{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .box.shake{animation:shake .4s ease}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
   @media (max-width:1100px) and (min-width:701px){footer .of{flex-wrap:wrap;justify-content:flex-start;gap:6px 18px}}
   @media (max-width:700px){
     .bg i{background-position:var(--pm,center)}
     .shade{background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.85) 100%)}
     .top{padding:20px 20px}
     .brand img{width:46px}
+    .actions{gap:6px}
     .private{padding:7px 11px;font-size:8.5px;letter-spacing:.18em}
-    .wrap{padding:0 24px 120px}
+    .lang > button{padding:7px 8px;font-size:8.5px;letter-spacing:.18em}
+    .type{font-size:clamp(28px,9.6vw,44px)}
     footer{left:24px;right:24px;bottom:20px;grid-template-columns:1fr;gap:12px;padding-top:14px;font-size:10px}
     footer .cr{justify-self:start;font-size:9.5px}
-    .wrap{padding-bottom:180px}
+    .wrap{padding:0 24px 180px}
     footer .of{flex-direction:column;align-items:flex-start;gap:6px}
     footer .of i{display:none}
     footer .of span{white-space:normal}
+    .box{padding:38px 26px 28px}
   }
   @media (prefers-reduced-motion:reduce){.bg i{animation:none!important}}
   .still *{animation-delay:0s!important;animation-duration:0s!important}
@@ -84,26 +134,101 @@
   <a class="brand" href="./" aria-label="Universis Asset Management">
     <img src="img/logo-blanco.png" alt="Universis Asset Management">
   </a>
-  <a class="private" href="https://hub.universiscapitalpartner.com/">Private area</a>
+  <div class="actions">
+    <div class="lang" id="lang">
+      <button type="button" aria-haspopup="listbox" aria-expanded="false" id="langBtn"><b id="langCur" style="font-weight:400">EN</b>
+        <svg viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.4"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+      <ul role="listbox" id="langList"></ul>
+    </div>
+    <button class="private" type="button" id="openLogin" data-t="private">Private area</button>
+  </div>
 </header>
 
 <main class="wrap">
-  <div class="type" aria-label="Investment. Development. Execution. Value."><span id="tw"></span><span class="caret"></span></div>
+  <div class="type" id="type" aria-label="Investment. Development. Execution. Value."><span id="tw"></span><span class="caret"></span></div>
 </main>
 
 <footer>
   <div class="of">
-    <span><b>Madrid</b>Paseo de la Castellana 40, 28046 Madrid, Spain</span><i></i>
-    <span><b>Luxembourg</b>21 rue du Puits Romain, L-8070 Bertrange</span><i></i>
-    <span><b>USA</b>8 The Green, Ste B, Dover, DE 19901</span>
+    <span><b data-t="madrid">Madrid</b>Paseo de la Castellana 40, 28046 Madrid, <em style="font-style:normal" data-t="spain">Spain</em></span><i></i>
+    <span><b data-t="lux">Luxembourg</b>21 rue du Puits Romain, L-8070 Bertrange</span><i></i>
+    <span><b data-t="usa">USA</b>8 The Green, Ste B, Dover, DE 19901</span>
   </div>
   <a class="mail" href="mailto:info@universisassetmanagement.com">info@universisassetmanagement.com</a>
   <span class="cr">© 2026 Universis Asset Management</span>
 </footer>
 
+<!-- ventana de acceso: no envía nada a ningún sitio; de momento no hay usuarios, así que siempre da error -->
+<div class="modal" id="login" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <form class="box" id="loginForm" novalidate>
+    <button class="x" type="button" id="closeLogin" aria-label="Close"><svg viewBox="0 0 12 12" stroke="#fff" stroke-width="1.3"><path d="M1 1l10 10M11 1 1 11"/></svg></button>
+    <img class="u" src="img/u-blanco.png" alt="">
+    <h2 id="loginTitle" data-t="private">Private area</h2>
+    <p class="sub" data-t="sub">Sign in with the credentials provided by Universis.</p>
+    <label for="lu" data-t="user">Username</label>
+    <input id="lu" name="username" type="text" autocomplete="off" autocapitalize="none" spellcheck="false">
+    <label for="lp" data-t="pass">Password</label>
+    <input id="lp" name="password" type="password" autocomplete="off">
+    <div class="err" id="err" role="alert" data-t="err">Incorrect username or password.</div>
+    <button class="go" type="submit" id="go"><i></i><span data-t="signin">Sign in</span></button>
+  </form>
+</div>
+
 <script>
 const STILL = location.search.includes('still');
 if (STILL) document.documentElement.classList.add('still');
+
+/* ---------- textos ---------- */
+const L = {
+  en:{name:'English',     words:['Investment.','Development.','Execution.','Value.'],
+      private:'Private area', sub:'Sign in with the credentials provided by Universis.', user:'Username', pass:'Password', signin:'Sign in',
+      err:'Incorrect username or password.', empty:'Enter your username and password.', madrid:'Madrid', lux:'Luxembourg', usa:'USA', spain:'Spain', close:'Close'},
+  es:{name:'Español',     words:['Inversión.','Desarrollo.','Ejecución.','Valor.'],
+      private:'Área privada', sub:'Accede con las credenciales facilitadas por Universis.', user:'Usuario', pass:'Contraseña', signin:'Entrar',
+      err:'Usuario o contraseña incorrectos.', empty:'Introduce tu usuario y contraseña.', madrid:'Madrid', lux:'Luxemburgo', usa:'EE. UU.', spain:'España', close:'Cerrar'},
+  fr:{name:'Français',    words:['Investissement.','Développement.','Exécution.','Valeur.'],
+      private:'Espace privé', sub:'Connectez-vous avec les identifiants fournis par Universis.', user:'Identifiant', pass:'Mot de passe', signin:'Se connecter',
+      err:'Identifiant ou mot de passe incorrect.', empty:'Saisissez votre identifiant et votre mot de passe.', madrid:'Madrid', lux:'Luxembourg', usa:'États-Unis', spain:'Espagne', close:'Fermer'},
+  it:{name:'Italiano',    words:['Investimento.','Sviluppo.','Esecuzione.','Valore.'],
+      private:'Area riservata', sub:'Accedi con le credenziali fornite da Universis.', user:'Nome utente', pass:'Password', signin:'Accedi',
+      err:'Nome utente o password non corretti.', empty:'Inserisci nome utente e password.', madrid:'Madrid', lux:'Lussemburgo', usa:'USA', spain:'Spagna', close:'Chiudi'},
+  de:{name:'Deutsch',     words:['Investition.','Entwicklung.','Umsetzung.','Wert.'],
+      private:'Privater Bereich', sub:'Melden Sie sich mit den von Universis bereitgestellten Zugangsdaten an.', user:'Benutzername', pass:'Passwort', signin:'Anmelden',
+      err:'Benutzername oder Passwort ist falsch.', empty:'Geben Sie Benutzername und Passwort ein.', madrid:'Madrid', lux:'Luxemburg', usa:'USA', spain:'Spanien', close:'Schließen'},
+  pt:{name:'Português',   words:['Investimento.','Desenvolvimento.','Execução.','Valor.'],
+      private:'Área privada', sub:'Aceda com as credenciais fornecidas pela Universis.', user:'Utilizador', pass:'Palavra-passe', signin:'Entrar',
+      err:'Utilizador ou palavra-passe incorretos.', empty:'Introduza o utilizador e a palavra-passe.', madrid:'Madrid', lux:'Luxemburgo', usa:'EUA', spain:'Espanha', close:'Fechar'},
+};
+/* país (por IP) → idioma */
+const C = {es:'ES AR MX CL CO PE UY PY BO EC VE CR PA DO GT HN SV NI CU PR GQ', fr:'FR BE LU MC SN CI CM ML BF NE TG BJ GA CG CD MG HT DZ MA TN',
+           it:'IT SM VA', de:'DE AT CH LI', pt:'PT BR AO MZ CV GW ST TL'};
+const byCountry = cc => Object.keys(C).find(k => C[k].split(' ').includes(cc)) || 'en';
+const store = { get(){ try { return localStorage.getItem('uam-lang'); } catch(e){ return null; } },
+                set(v){ try { localStorage.setItem('uam-lang', v); } catch(e){} } };
+let lang = 'en';
+
+function applyLang(l, restartType){
+  if (!L[l]) l = 'en';
+  lang = l; const T = L[l];
+  document.documentElement.lang = l;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = T[el.dataset.t]; });
+  document.getElementById('closeLogin').setAttribute('aria-label', T.close);
+  document.getElementById('type').setAttribute('aria-label', T.words.join(' '));
+  document.getElementById('langCur').textContent = l.toUpperCase();
+  document.querySelectorAll('#langList button').forEach(b => b.setAttribute('aria-current', b.dataset.l === l));
+  if (restartType) typer.restart();
+}
+
+/* ---------- selector de idioma ---------- */
+(() => {
+  const box = document.getElementById('lang'), btn = document.getElementById('langBtn'), ul = document.getElementById('langList');
+  ul.innerHTML = Object.keys(L).map(k => `<li><button type="button" role="option" data-l="${k}">${L[k].name}<span>${k.toUpperCase()}</span></button></li>`).join('');
+  const toggle = open => { box.classList.toggle('open', open); btn.setAttribute('aria-expanded', open); };
+  btn.addEventListener('click', e => { e.stopPropagation(); toggle(!box.classList.contains('open')); });
+  ul.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; store.set(b.dataset.l); applyLang(b.dataset.l, true); toggle(false); });
+  document.addEventListener('click', e => { if (!box.contains(e.target)) toggle(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') toggle(false); });
+})();
 
 /* ---------- fondo ---------- */
 (() => {
@@ -125,25 +250,66 @@ if (STILL) document.documentElement.classList.add('still');
 })();
 
 /* ---------- máquina de escribir ---------- */
-(() => {
-  const words = ['Investment.', 'Development.', 'Execution.', 'Value.'];
+const typer = (() => {
   const el = document.getElementById('tw');
-  if (STILL){ el.textContent = 'Development.'; return; }
-  let w = 0, i = 0, del = false;
-  function step(){
-    const word = words[w];
-    if (!del){
-      i++; el.textContent = word.slice(0, i);
-      if (i === word.length){ del = true; return setTimeout(step, w === words.length-1 ? 2600 : 1700); }
-      return setTimeout(step, 70 + Math.random()*70);
+  let gen = 0, timer = null;
+  function run(delay){
+    const my = ++gen; clearTimeout(timer);
+    let w = 0, i = 0, del = false;
+    const later = (fn, ms) => { timer = setTimeout(() => { if (my === gen) fn(); }, ms); };
+    function step(){
+      const words = L[lang].words, word = words[w];
+      if (!del){
+        i++; el.textContent = word.slice(0, i);
+        if (i === word.length){ del = true; return later(step, w === words.length-1 ? 2600 : 1700); }
+        return later(step, 70 + Math.random()*70);
+      }
+      i--; el.textContent = word.slice(0, i);
+      if (i === 0){ del = false; w = (w+1) % words.length; return later(step, 380); }
+      later(step, 34);
     }
-    i--; el.textContent = word.slice(0, i);
-    if (i === 0){ del = false; w = (w+1) % words.length; return setTimeout(step, 380); }
-    setTimeout(step, 34);
+    later(step, delay);
   }
-  setTimeout(step, 2600);
+  return { start(){ if (STILL){ el.textContent = L[lang].words[1]; return; } run(2600); },
+           restart(){ if (STILL){ el.textContent = L[lang].words[1]; return; } el.textContent = ''; run(250); } };
 })();
 
+/* ---------- idioma inicial: elección guardada > país por IP > idioma del navegador ---------- */
+(() => {
+  const saved = store.get();
+  const nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+  const qs = new URLSearchParams(location.search).get('lang');
+  applyLang(qs || saved || (L[nav] ? nav : 'en'), false);
+  typer.start();
+  if (qs || saved) return;
+  const ctl = new AbortController(); setTimeout(() => ctl.abort(), 2000);
+  fetch('https://api.country.is/', {signal: ctl.signal}).then(r => r.json())
+    .then(d => { const l = byCountry(String(d.country || '').toUpperCase()); if (l !== lang) applyLang(l, true); })
+    .catch(() => {});
+})();
+
+/* ---------- ventana de acceso (sin usuarios: siempre error; no envía nada) ---------- */
+(() => {
+  const m = document.getElementById('login'), f = document.getElementById('loginForm'), err = document.getElementById('err'),
+        u = document.getElementById('lu'), p = document.getElementById('lp'), go = document.getElementById('go');
+  const open = () => { m.classList.add('open'); err.classList.remove('show'); setTimeout(() => u.focus(), 120); };
+  const close = () => { m.classList.remove('open'); p.value = ''; };
+  document.getElementById('openLogin').addEventListener('click', open);
+  document.getElementById('closeLogin').addEventListener('click', close);
+  m.addEventListener('click', e => { if (e.target === m) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && m.classList.contains('open')) close(); });
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    err.classList.remove('show');
+    const box = f; box.classList.remove('shake');
+    if (!u.value.trim() || !p.value){ err.textContent = L[lang].empty; void box.offsetWidth; box.classList.add('shake'); err.classList.add('show'); return; }
+    go.disabled = true;
+    setTimeout(() => {
+      go.disabled = false; p.value = '';
+      err.textContent = L[lang].err; void box.offsetWidth; box.classList.add('shake'); err.classList.add('show'); p.focus();
+    }, 900);
+  });
+})();
 </script>
 </body>
 </html>
